@@ -12,7 +12,7 @@ int get_c(va_list args)
 	char c = va_arg(args, int);
 
 	put_char(c);
-	return (0);
+	return (1);
 }
 
 /**
@@ -41,7 +41,7 @@ int print_s(va_list args)
 int print_percent(va_list args)
 {
 	put_char('%');
-	return (0);
+	return (1);
 }
 
 /**
@@ -53,7 +53,6 @@ int print_percent(va_list args)
 int _printf(const char *format, ...)
 {
 	va_list args;
-
 	va_start(args, format);
 	int len = 0;
 
@@ -65,7 +64,7 @@ int _printf(const char *format, ...)
 			switch (*format)
 			{
 				case 'c':
-					len += print_c(args);
+					len += get_c(args);
 					break;
 				case 's':
 					len += print_s(args);
