@@ -1,86 +1,72 @@
 #include <stdlib.h>
-#include "main.h"
+#include <unistd.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include "main.h"
 /**
- * get_c - char format
- * @args: argument parameters
- * Return: return success(0)
+ * char_buff - format and buffer
+ * @format: specifier
+ * @buffer: temporary storage
+ * @len: length
  */
-int get_c(va_list args)
+void char_buff(char **format, char *buffer, unsigned int *len)
 {
-	char c = va_arg(args, int);
-
-	put_char(c);
-	return (1);
+		while (**format != 0 && **format != '%')
+		{
+			buffer[(*len)++] = **format;
+			(*format)++;
+		}
 }
-
 /**
- * print_s - string format
- * @args: arguments
- * Return: return count
+ * arg - arguments function
+ * @list: arguments list
+ * @format: arguments format
+ * Return: string str
  */
-int print_s(va_list args)
+char *arg(va_list list, char *format)
 {
-	char *s = va_arg(args, char*);
-	int count = 0;
+	static char str[2] = {0, 0};
 
-	for (; *s != '\0'; s++)
+	switch (*format)
 	{
-		put_char(*s);
-		count++;
+	case '%':
+		str[0] = '%';
+		return (str);
+	case 'c':
+		str[0] = (char) va_arg(list, int);
+		return (str);
+	case 's':
+		return (va_arg(list, char *));
 	}
-	return (count);
+	return (NULL);
 }
-
 /**
- * print_percent - percent format
- * @args: argument
- * Return: return success
+ * _printf - prints to stdout
+ * @format: format specifier
+ * Return: return p
  */
-int print_percent(va_list args)
+int _printf(char *format, ...)
 {
-	put_char('%');
-	return (1);
-}
+	char *tmp, buffer[1024];
+	unsigned int len = 0, bufflen = 0;
+	unsigned long int p = 0;
+	va_list list;
 
-/**
- * _printf - produces output according to format
- * @format: output
- * Return: value of len
- */
-
-int _printf(const char *format, ...)
-{
-	va_list args;
-	va_start(args, format);
-	int len = 0;
-
-	while (*format != '\0')
+	va_start(list, format);
+	while (*format)
 	{
 		if (*format == '%')
 		{
 			format++;
-			switch (*format)
-			{
-				case 'c':
-					len += get_c(args);
-					break;
-				case 's':
-					len += print_s(args);
-					break;
-				case '%':
-					len += print_percent(args);
-					break;
-			}
+			tmp = arg(list, format);
+			format++;
+			while (*tmp)
+				buffer[len++] = *tmp++;
 		}
 		else
-		{
-			put_char(*format);
-			len++;
-		}
-		format++;
+			char_buff(&format, buffer, &len);
 	}
-	va_end(args);
-	return (len);
+	write(1, buffer, len);
+	p += len;
+	return (p);
 }
