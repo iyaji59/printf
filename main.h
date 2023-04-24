@@ -1,21 +1,15 @@
 #ifndef MAIN_H
 #define MAIN_H
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include <limits.h>
 #include <unistd.h>
-
-
-
 /**
- * struct format - match specifier
- * @id: char pointer
- * @f: pointer function to conversion specifier
- * 
+ * struct format - convert specifier match
+ * @id: pointer to specifier
+ * @f: function pointer
  */
-
 typedef struct format
 {
 	char *id;
